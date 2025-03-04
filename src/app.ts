@@ -1,5 +1,6 @@
 import { ImageComponent } from './components/item/image.js';
 import { NoteComponent } from './components/item/note.js';
+import { TodoComponent } from './components/item/todo.js';
 import { PageComponent } from './components/page/page.js';
 
 class App {
@@ -13,6 +14,9 @@ class App {
 
     const note = new NoteComponent('Note Title', 'Note body text hello hello');
     note.attachTo(appRoot, 'beforeend');
+
+    const todo = new TodoComponent('Todo Title', 'Todays Todo1');
+    todo.attachTo(appRoot, 'beforeend');
   }
 }
 
