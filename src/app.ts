@@ -1,4 +1,5 @@
 import { Component } from './components/component.js';
+import { InputDialog } from './components/dialog/dialog.js';
 import { ImageComponent } from './components/item/image.js';
 import { NoteComponent } from './components/item/note.js';
 import { TodoComponent } from './components/item/todo.js';
@@ -26,6 +27,21 @@ class App {
     const todo = new TodoComponent('Todo Title', 'Todays Todo1');
     this.page.addChild(todo);
     // todo.attachTo(appRoot, 'beforeend');
+
+    const imageBtn = document.querySelector('#new-image')! as HTMLButtonElement;
+    imageBtn.onclick = () => {
+      const dialog = new InputDialog();
+
+      dialog.setCloseListener(() => {
+        dialog.removeFrom(document.body);
+      });
+      dialog.setSubmitListener(() => {
+        //Todo 섹션 생성하여 페이에 추가 하기
+        dialog.removeFrom(document.body);
+      });
+
+      dialog.attachTo(document.body);
+    };
   }
 }
 
