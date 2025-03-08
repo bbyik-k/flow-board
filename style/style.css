@@ -166,7 +166,7 @@ body {
   flex-direction: column;
   padding: 0.4em;
   width: 32em;
-  background: var(--bg-accent-color);
+  /* background: var(--bg-accent-color); */
   background: var(--component-bg-gradient);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
