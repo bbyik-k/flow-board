@@ -8,99 +8,41 @@ import { TodoComponent } from './components/item/todo.js';
 import { VideoComponent } from './components/item/video.js';
 import { Composable, PageComponent, PageItemComponent } from './components/page/page.js';
 
+type InputComponentConstructor<T = MediaSectionInput | TextSectionInput> = {
+  new (): T;
+};
 class App {
   private readonly page: Component & Composable;
-  constructor(appRoot: HTMLElement, dialogRoot: HTMLElement) {
+  constructor(appRoot: HTMLElement, private dialogRoot: HTMLElement) {
     this.page = new PageComponent(PageItemComponent);
     this.page.attachTo(appRoot);
 
-    // const image = new ImageComponent('Image Title', 'https://picsum.photos/600/300');
-    // this.page.addChild(image);
-    // image.attachTo(appRoot, 'beforeend');
+    this.bindElementToDialog<MediaSectionInput>('#new-image', MediaSectionInput, (input: MediaSectionInput) => new ImageComponent(input.title, input.url));
+    this.bindElementToDialog<MediaSectionInput>('#new-video', MediaSectionInput, (input: MediaSectionInput) => new VideoComponent(input.title, input.url));
+    this.bindElementToDialog<TextSectionInput>('#new-note', TextSectionInput, (input: TextSectionInput) => new NoteComponent(input.title, input.body));
+    this.bindElementToDialog<TextSectionInput>('#new-todo', TextSectionInput, (input: TextSectionInput) => new TodoComponent(input.title, input.body));
+  }
 
-    // const video = new VideoComponent('Video Title', 'https://www.youtube.com/embed/QMRfwapH_WI?si=qp5dht3QOVYFWxay');
-    // this.page.addChild(video);
-    // video.attachTo(appRoot, 'beforeend');
-
-    // const note = new NoteComponent('Note Title', 'Note body text hello hello');
-    // this.page.addChild(note);
-    // note.attachTo(appRoot, 'beforeend');
-
-    // const todo = new TodoComponent('Todo Title', 'Todays Todo1');
-    // this.page.addChild(todo);
-    // todo.attachTo(appRoot, 'beforeend');
-
-    const imageBtn = document.querySelector('#new-image')! as HTMLButtonElement;
-    imageBtn.onclick = () => {
+  private bindElementToDialog<T extends MediaSectionInput | TextSectionInput>(
+    //
+    selector: string,
+    InputComponent: InputComponentConstructor<T>,
+    makeSection: (input: T) => Component
+  ) {
+    const elementBtn = document.querySelector(selector)! as HTMLButtonElement;
+    elementBtn.onclick = () => {
       const dialog = new InputDialog();
-      const inputSection = new MediaSectionInput();
+      const inputSection = new InputComponent();
       dialog.addChild(inputSection);
-      dialog.attachTo(dialogRoot);
+      dialog.attachTo(this.dialogRoot);
 
       dialog.setCloseListener(() => {
-        dialog.removeFrom(dialogRoot);
+        dialog.removeFrom(this.dialogRoot);
       });
       dialog.setSubmitListener(() => {
-        //Todo 섹션 생성하여 페이에 추가 하기
-        const image = new ImageComponent(inputSection.title, inputSection.url);
-        this.page.addChild(image);
-        dialog.removeFrom(dialogRoot);
-      });
-    };
-
-    const videoBtn = document.querySelector('#new-video')! as HTMLButtonElement;
-    videoBtn.onclick = () => {
-      const dialog = new InputDialog();
-      const inputSection = new MediaSectionInput();
-      dialog.addChild(inputSection);
-      dialog.attachTo(dialogRoot);
-
-      dialog.setCloseListener(() => {
-        dialog.removeFrom(dialogRoot);
-      });
-      dialog.setSubmitListener(() => {
-        //Todo 섹션 생성하여 페이에 추가 하기
-        const video = new VideoComponent(inputSection.title, inputSection.url);
-        this.page.addChild(video);
-
-        dialog.removeFrom(dialogRoot);
-      });
-    };
-
-    const noteBtn = document.querySelector('#new-note')! as HTMLButtonElement;
-    noteBtn.onclick = () => {
-      const dialog = new InputDialog();
-      const inputSection = new TextSectionInput();
-      dialog.addChild(inputSection);
-      dialog.attachTo(dialogRoot);
-
-      dialog.setCloseListener(() => {
-        dialog.removeFrom(dialogRoot);
-      });
-      dialog.setSubmitListener(() => {
-        //Todo 섹션 생성하여 페이에 추가 하기
-        const note = new NoteComponent(inputSection.title, inputSection.body);
-        this.page.addChild(note);
-
-        dialog.removeFrom(dialogRoot);
-      });
-    };
-    const todoBtn = document.querySelector('#new-todo')! as HTMLButtonElement;
-    todoBtn.onclick = () => {
-      const dialog = new InputDialog();
-      const inputSection = new TextSectionInput();
-      dialog.addChild(inputSection);
-      dialog.attachTo(dialogRoot);
-
-      dialog.setCloseListener(() => {
-        dialog.removeFrom(dialogRoot);
-      });
-      dialog.setSubmitListener(() => {
-        //Todo 섹션 생성하여 페이에 추가 하기
-        const todo = new TodoComponent(inputSection.title, inputSection.body);
-        this.page.addChild(todo);
-
-        dialog.removeFrom(dialogRoot);
+        const section = makeSection(inputSection);
+        this.page.addChild(section);
+        dialog.removeFrom(this.dialogRoot);
       });
     };
   }
