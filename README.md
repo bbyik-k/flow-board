@@ -2,7 +2,8 @@
 
 🚀 **A modular TypeScript-based board for managing images, videos, notes, and todos.**  
 📌 TypeScript 기반으로 개발된 컴포넌트 시스템으로, **React 없이도 동적인 UI**를 구현하며,  
- 컴포넌트 추가 및 동작과 관련된 HTML 요소의 동작 방식을 탐구하는 프로젝트입니다.
+📌 컴포넌트 추가 및 동작과 관련된 HTML 요소의 동작 방식을 탐구하는 프로젝트입니다.  
+📌 app객체지향 프로그래밍(OOP) 원칙을 적용하여 유지보수성과 확장성을 고려한 설계를 적용했습니다.
 
 ---
 
