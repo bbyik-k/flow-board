@@ -9,16 +9,18 @@ import { VideoComponent } from './components/item/video.js';
 import { Composable, PageComponent, PageItemComponent } from './components/page/page.js';
 
 type InputComponentConstructor<T = (MediaData | TextData) & Component> = {
-  new (): T;
+  new (placeholder?: string): T;
 };
+const MOCK_IMAGE_URL = 'https://picsum.photos/560/315';
+const MOCK_VIDEO_URL = 'https://youtu.be/MWkIxYtB8Ag?si=cn4Afxq39WE9c8Fw';
 class App {
   private readonly page: Component & Composable;
   constructor(appRoot: HTMLElement, private dialogRoot: HTMLElement) {
     this.page = new PageComponent(PageItemComponent);
     this.page.attachTo(appRoot);
 
-    this.bindElementToDialog<MediaSectionInput>('#new-image', MediaSectionInput, (input: MediaSectionInput) => new ImageComponent(input.title, input.url));
-    this.bindElementToDialog<MediaSectionInput>('#new-video', MediaSectionInput, (input: MediaSectionInput) => new VideoComponent(input.title, input.url));
+    this.bindElementToDialog<MediaSectionInput>('#new-image', MediaSectionInput, (input: MediaSectionInput) => new ImageComponent(input.title, input.url), MOCK_IMAGE_URL);
+    this.bindElementToDialog<MediaSectionInput>('#new-video', MediaSectionInput, (input: MediaSectionInput) => new VideoComponent(input.title, input.url), MOCK_VIDEO_URL);
     this.bindElementToDialog<TextSectionInput>('#new-note', TextSectionInput, (input: TextSectionInput) => new NoteComponent(input.title, input.body));
     this.bindElementToDialog<TextSectionInput>('#new-todo', TextSectionInput, (input: TextSectionInput) => new TodoComponent(input.title, input.body));
   }
@@ -27,12 +29,13 @@ class App {
     //
     selector: string,
     InputComponent: InputComponentConstructor<T>,
-    makeSection: (input: T) => Component
+    makeSection: (input: T) => Component,
+    placeholder?: string
   ) {
     const elementBtn = document.querySelector(selector)! as HTMLButtonElement;
     elementBtn.onclick = () => {
       const dialog = new InputDialog();
-      const inputSection = new InputComponent();
+      const inputSection = new InputComponent(placeholder);
       dialog.addChild(inputSection);
       dialog.attachTo(this.dialogRoot);
 
