@@ -11,12 +11,15 @@ type OnDragStateListener<T extends Component> = (target: T, state: DragState) =>
 interface SectionContainer extends Component, Composable {
   setOnCloseListener(listener: OnCloseListener): void;
   setOnDragStateListener(listener: OnDragStateListener<SectionContainer>): void;
+  getBoundingRect(): DOMRect;
 }
 
 type SectionContainerConstructor = {
   new (): SectionContainer;
 };
 export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable {
+  private dropTarget?: SectionContainer;
+  private dragTarget?: SectionContainer;
   constructor(private pageItemConstructor: SectionContainerConstructor) {
     super('<ul></ul>');
     this.element.classList.add('page');
@@ -35,6 +38,16 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
   onDrop(event: DragEvent) {
     event.preventDefault();
     console.log('onDrop');
+    //위치 변경 해주기
+    if (!this.dropTarget) {
+      return;
+    }
+    if (this.dragTarget && this.dragTarget !== this.dropTarget) {
+      const dropY = event.clientY;
+      const srcElement = this.dragTarget.getBoundingRect();
+      this.dragTarget.removeFrom(this.element);
+      this.dropTarget.attach(this.dragTarget, dropY < srcElement.y ? 'beforebegin' : 'afterend');
+    }
   }
 
   addChild(section: Component) {
@@ -45,6 +58,23 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
       item.removeFrom(this.element);
     });
     item.setOnDragStateListener((target: SectionContainer, state: DragState) => {
+      switch (state) {
+        case 'start':
+          this.dragTarget = target;
+          break;
+        case 'end':
+          this.dragTarget = undefined;
+          break;
+        case 'enter':
+          this.dropTarget = target;
+          break;
+        case 'leave':
+          this.dropTarget = undefined;
+          break;
+        default:
+          throw new Error(`지원되지 않는 state 입니다. - ${state}`);
+          break;
+      }
       console.log(target, state);
     });
   }
@@ -109,5 +139,9 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
   setOnDragStateListener(listener: OnDragStateListener<PageItemComponent>) {
     // listener(new PageItemComponent(), 'end');
     this.dragStateListener = listener;
+  }
+
+  getBoundingRect(): DOMRect {
+    return this.element.getBoundingClientRect();
   }
 }
