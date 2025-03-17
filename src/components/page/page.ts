@@ -12,6 +12,7 @@ interface SectionContainer extends Component, Composable {
   setOnCloseListener(listener: OnCloseListener): void;
   setOnDragStateListener(listener: OnDragStateListener<SectionContainer>): void;
   getBoundingRect(): DOMRect;
+  onDropped(): void;
 }
 
 type SectionContainerConstructor = {
@@ -37,8 +38,6 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
   }
   onDrop(event: DragEvent) {
     event.preventDefault();
-    console.log('onDrop');
-    //위치 변경 해주기
     if (!this.dropTarget) {
       return;
     }
@@ -48,6 +47,7 @@ export class PageComponent extends BaseComponent<HTMLUListElement> implements Co
       this.dragTarget.removeFrom(this.element);
       this.dropTarget.attach(this.dragTarget, dropY < srcElement.y ? 'beforebegin' : 'afterend');
     }
+    this.dropTarget.onDropped();
   }
 
   addChild(section: Component) {
@@ -112,15 +112,22 @@ export class PageItemComponent extends BaseComponent<HTMLElement> implements Sec
   }
   onDragStart(_: DragEvent) {
     this.notifyDragObservers('start');
+    this.element.classList.add('lifted');
   }
   onDragEnd(_: DragEvent) {
     this.notifyDragObservers('end');
+    this.element.classList.remove('lifted');
   }
   onDragEnter(_: DragEvent) {
     this.notifyDragObservers('enter');
+    this.element.classList.add('drop-area');
   }
   onDragLeave(_: DragEvent) {
     this.notifyDragObservers('leave');
+    this.element.classList.remove('drop-area');
+  }
+  onDropped() {
+    this.element.classList.remove('drop-area');
   }
 
   notifyDragObservers(state: DragState) {
