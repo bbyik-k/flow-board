@@ -23,6 +23,15 @@ class App {
     this.bindElementToDialog<MediaSectionInput>('#new-video', MediaSectionInput, (input: MediaSectionInput) => new VideoComponent(input.title, input.url), MOCK_VIDEO_URL);
     this.bindElementToDialog<TextSectionInput>('#new-note', TextSectionInput, (input: TextSectionInput) => new NoteComponent(input.title, input.body));
     this.bindElementToDialog<TextSectionInput>('#new-todo', TextSectionInput, (input: TextSectionInput) => new TodoComponent(input.title, input.body));
+
+    this.page.addChild(new ImageComponent('Image Title', MOCK_IMAGE_URL));
+    this.page.addChild(new VideoComponent('Video Title', MOCK_VIDEO_URL));
+    this.page.addChild(new NoteComponent('Note Title', 'Note body'));
+    this.page.addChild(new TodoComponent('Video Title', 'Video body'));
+    this.page.addChild(new ImageComponent('Image Title', MOCK_IMAGE_URL));
+    this.page.addChild(new VideoComponent('Video Title', MOCK_VIDEO_URL));
+    this.page.addChild(new NoteComponent('Note Title', 'Note body'));
+    this.page.addChild(new TodoComponent('Video Title', 'Video body'));
   }
 
   private bindElementToDialog<T extends (MediaData | TextData) & Component>(
